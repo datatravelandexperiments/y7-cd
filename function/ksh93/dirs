@@ -1,0 +1,4 @@
+function dirs
+{
+    y7dirs "$@"
+}

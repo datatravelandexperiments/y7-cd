@@ -1,0 +1,7 @@
+if [[ -z $Y7DIRS ]]
+then
+    export Y7DIRS=$PWD
+else
+    cd "$PWD" >/dev/null
+fi
+. "$1/function/$Y7SH/cd"

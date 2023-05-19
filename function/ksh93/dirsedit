@@ -1,0 +1,92 @@
+# bash/ksh93 version
+
+function dirsedit
+{
+    typeset opc s t v
+    typeset -a dirs tmp
+    typeset OPTIND
+    while getopts 'A:S:ep' opc
+    do
+        case "$opc" in
+        [AS])
+            t=$opc
+            v=$OPTARG
+            ;;
+        [ep])
+            s=$opc
+            ;;
+        '?')
+            echo >&2 "Usage: dirs [-esp] [-A array] [-S var] [editor…]"
+            echo >&2 "  -e        - use Y7 escaped splitting"
+            echo >&2 "  -p        - use PATH-style splitting"
+            echo >&2 "  -A array  - display \${array[@]}"
+            echo >&2 "  -S var    - display \${var}"
+            ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    if (($# == 0))
+    then
+        set -- ${VISUAL:-${EDITOR:-vi}}
+    fi
+
+    if [[ -z $t ]]
+    then
+        t=S
+        v=Y7DIRS
+        s=e
+    elif [[ -z $s ]]
+    then
+        s=p
+    fi
+    typeset _split=y7${s}split _join=y7${s}join
+
+    # Read variable.
+    typeset -n V=$v
+    if [[ $t == S ]]
+    then
+        $_split tmp "$V"
+        dirs+=("${tmp[@]}")
+    else
+        dirs+=("${V[@]}")
+    fi
+
+    # Write to file.
+    typeset d tmp=${TMPDIR:-/tmp}/dirsedit:$$
+    for d in "${dirs[@]}"
+    do
+        printf '%s\n' "$d"
+    done >$tmp
+
+    if ! eval "$@" "$tmp"
+    then
+        typeset r=$?
+        print -u2 "No change"
+        exit $r
+    fi
+
+    # Read from file.
+    dirs=()
+    if [[ $v == Y7DIRS ]]
+    then
+        dirs+=("$PWD")
+    fi
+    while read -r d
+    do
+        if [[ -n $d ]]
+        then
+            dirs+=("$d")
+        fi
+    done <$tmp
+    y7pathclean dirs
+
+    # Write variable.
+    if [[ $t == S ]]
+    then
+        V=$($_join "${dirs[@]}")
+    else
+        V=("${dirs[@]}")
+    fi
+}
+
+# vim:set filetype=sh et sts=4 sw=4 ai noci nosi:

@@ -1,0 +1,4 @@
+function setd
+{
+    y7setd "$@"
+}

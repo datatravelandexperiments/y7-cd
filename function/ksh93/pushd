@@ -1,0 +1,4 @@
+function pushd
+{
+    y7pushd "$@"
+}

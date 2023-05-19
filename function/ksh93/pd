@@ -1,0 +1,4 @@
+function pd
+{
+    (y7cd "$@" && pwd)
+}
