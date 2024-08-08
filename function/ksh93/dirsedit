@@ -2,21 +2,25 @@
 
 function dirsedit
 {
-    typeset opc s t v
+    typeset opc s t v clean
     typeset -a dirs tmp
     typeset OPTIND
-    while getopts 'A:S:ep' opc
+    while getopts 'A:S:cep' opc
     do
         case "$opc" in
         [AS])
             t=$opc
             v=$OPTARG
             ;;
+        c)
+            clean=1
+            ;;
         [ep])
             s=$opc
             ;;
         '?')
             echo >&2 "Usage: dirs [-esp] [-A array] [-S var] [editor…]"
+            echo >&2 "  -c        - clear duplicate and missing directories"
             echo >&2 "  -e        - use Y7 escaped splitting"
             echo >&2 "  -p        - use PATH-style splitting"
             echo >&2 "  -A array  - display \${array[@]}"
@@ -78,7 +82,11 @@ function dirsedit
             dirs+=("$d")
         fi
     done <$tmp
-    y7pathclean dirs
+
+    if [[ -n $clean ]]
+    then
+        y7pathclean dirs
+    fi
 
     # Write variable.
     if [[ $t == S ]]
@@ -88,5 +96,3 @@ function dirsedit
         V=("${dirs[@]}")
     fi
 }
-
-# vim:set filetype=sh et sts=4 sw=4 ai noci nosi:
