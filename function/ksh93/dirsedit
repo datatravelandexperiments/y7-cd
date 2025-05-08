@@ -1,4 +1,4 @@
 function dirsedit
 {
-    arrayedit -e -F y7pathclean -S Y7DIRS "$@"
+    y7arrayedit -e -F y7pathclean -S Y7DIRS "$@"
 }
