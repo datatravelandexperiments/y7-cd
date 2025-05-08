@@ -1,0 +1,4 @@
+function path
+{
+    y7arraylist -p -h -S PATH "$@"
+}

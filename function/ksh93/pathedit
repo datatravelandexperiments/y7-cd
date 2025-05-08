@@ -1,0 +1,4 @@
+function pathedit
+{
+    y7arrayedit -p -F y7pathclean -S PATH "$@"
+}
